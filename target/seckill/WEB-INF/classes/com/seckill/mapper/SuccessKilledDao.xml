@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seckill.dao.successKilledDao">
+    <insert id="insertSuccessKilled">
+        <!--主键冲突，报错，重复插入时返回0，不报错-->
+        insert ignore into success_killed(seckill_id,user_phone,state)
+        values (#{seckillId},#{userPhone},0)
+    </insert>
+    <select id="queryByIdWithSeckill" resultType="SuccessKilled">
+        <!-- 根据id查询Success_Kidlled并携带秒杀产品对象-->
+        <!--如何告诉mybatis把结果映射到SuccessKilled实体同时隐射seckill属性-->
+        <!--可以自由控制sql-->
+        select
+        sk.seckill_id,
+        sk.user_phone,
+        sk.create_time,
+        sk.state,
+        s.seckill_id as "seckill.seckill_id",
+        s.seckill_name as "seckill.seckillName",
+        s.seckill_number as "seckill.seckillNumber",
+        s.start_time as "seckill.startTime",
+        s.end_time as "seckill.endTime",
+        s.create_time as "seckill.createTime"
+        from success_killed as sk
+        inner join  seckill as s on sk.seckill_id=s.seckill_id
+        where sk.seckill_id=#{seckillId} and sk.user_phone=${userPhone}
+    </select>
+</mapper>
